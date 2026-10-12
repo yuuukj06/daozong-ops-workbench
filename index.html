@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>到综行业运营工作台</title>
+
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<meta name="theme-color" content="#FF5000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="到综工作台">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="logo">到</div><div><h1>到综行业运营工作台</h1><div class="sub">DAILY OPS · 记录、诊断、行动闭环</div></div></div>
+  <div class="top-controls"><span class="date" id="today"></span><button class="text-link" id="openSettings">设置与 API ↗</button></div>
+</header>
+<div class="layout">
+<main class="main">
+  <section class="card">
+    <div class="eyebrow">Daily workspace</div><h2 class="hero-title" style="margin-top:8px">今天，推进了什么？</h2><p class="muted" style="margin:0 0 22px">先记录事实，再定位链路问题，最后把动作和指标连起来。</p>
+    <div class="grid2">
+      <div class="field" style="margin-top:0"><label class="label" for="industry">所属行业</label><select id="industry"><option>交通工具</option><option>丽人</option><option>本地生活服务</option><option>汽车</option></select></div>
+      <div class="field" style="margin-top:0"><label class="label" for="chainSelect">主要业务链路</label><select id="chainSelect"><option value="商家">商家侧</option><option value="商品">商品侧</option><option value="交易">交易侧</option><option value="流量">流量侧</option><option value="运营">运营侧</option><option value="系统">系统侧</option></select></div>
+    </div>
+    <label class="label" for="workInput">工作内容</label>
+    <textarea id="workInput" placeholder="尽量按「做了什么—对象/范围—结果/数据—卡点」记录。例：跟进 8 家丽人商家上品，5 家通过审核，3 家因资质材料不完整退回；补齐后预计明日复审。"></textarea>
+    <div class="input-tools"><div class="actions"><button class="small-link" id="voiceBtn">🎙 开始语音输入</button><button class="small-link" id="clearInput">清空内容</button></div><span class="muted" id="wordCount">0 字</span></div>
+    <div class="divider" style="margin:17px 0"></div>
+    <div class="grid2">
+      <div class="field" style="margin:0"><label class="label" for="expectedMetric">预期影响指标</label><select id="expectedMetric"><option value="">暂不指定</option><option>GMV</option><option>支付订单</option><option>核销率</option><option>动销率</option><option>审核通过率</option><option>支付转化率</option><option>客单价</option><option>退款率</option><option>复购率</option><option>投流 ROI</option><option>其他指标</option></select></div>
+      <div class="field" style="margin:0"><label class="label" for="expectedValue">预期变化值</label><input id="expectedValue" type="number" step="any" placeholder="如 +5 或 -2.5"><div class="hint">按所选指标单位填写；相对变化请自行标注</div></div>
+    </div>
+    <div class="tag-row" style="margin-top:16px"><span class="tag orange" id="autoIndustryTag">行业：交通工具</span><span class="tag" id="autoChainTag">链路：商家侧</span><span class="tag">达人 / 商家 / 运营商 / 中台 / 治理 / 产运</span></div>
+    <div class="actions" style="margin-top:22px"><button class="primary" id="submitBtn">生成报告</button><button class="small-link" id="copyPromptBtn">复制 AI 提示词</button></div>
+    <div class="status" id="inputStatus" role="status"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><div><div class="eyebrow">Signals</div><h2 style="margin-top:5px">核心经营指标</h2><div class="muted">录入当前值与基线。低于基线时会标红提醒，不自动推断因果。</div></div><button class="small-link" id="resetMetrics">清空数值</button></div>
+    <div class="kpi-grid">
+      <div class="kpi" id="cardGMV"><label for="kpiGMV">GMV · 元</label><div class="kpi-value-row"><input class="value" id="kpiGMV" type="number" step="any" placeholder="—"><span class="trend" id="trendGMV">→</span></div><div class="baseline-line">基线 <input class="baseline" id="baseGMV" type="number" step="any" value="1000" aria-label="GMV 基线"></div><div class="baseline-note" id="noteGMV">填写当前值进行比较</div></div>
+      <div class="kpi" id="cardOrders"><label for="kpiOrders">支付订单 · 单</label><div class="kpi-value-row"><input class="value" id="kpiOrders" type="number" step="any" placeholder="—"><span class="trend" id="trendOrders">→</span></div><div class="baseline-line">基线 <input class="baseline" id="baseOrders" type="number" step="any" value="10" aria-label="支付订单基线"></div><div class="baseline-note" id="noteOrders">填写当前值进行比较</div></div>
+      <div class="kpi" id="cardVerify"><label for="kpiVerify">核销率 · %</label><div class="kpi-value-row"><input class="value" id="kpiVerify" type="number" step="any" placeholder="—"><span class="trend" id="trendVerify">→</span></div><div class="baseline-line">基线 <input class="baseline" id="baseVerify" type="number" step="any" value="50" aria-label="核销率基线"></div><div class="baseline-note" id="noteVerify">填写当前值进行比较</div></div>
+      <div class="kpi" id="cardActive"><label for="kpiActive">动销率 · %</label><div class="kpi-value-row"><input class="value" id="kpiActive" type="number" step="any" placeholder="—"><span class="trend" id="trendActive">→</span></div><div class="baseline-line">基线 <input class="baseline" id="baseActive" type="number" step="any" value="30" aria-label="动销率基线"></div><div class="baseline-note" id="noteActive">填写当前值进行比较</div></div>
+    </div>
+    <div class="section-title"><h2>自定义指标</h2><button class="small-link" id="addMetric">＋ 添加指标</button></div>
+    <div class="metric-wrap"><table class="metric-table"><thead><tr><th>指标</th><th>当前值</th><th>对比值</th><th>目标值</th><th>基线</th><th>单位</th><th></th></tr></thead><tbody id="metricRows"></tbody></table></div>
+    <div class="metric-actions"><span class="hint">变化率 =（当前值－对比值）÷ 对比值；对比值为 0 时不计算。</span><button class="small-link" id="analyzeMetrics">分析变化 ↗</button></div>
+    <div id="metricAnalysis" class="summary-output" style="margin-top:12px"></div>
+  </section>
+
+  <section class="card" id="reportCard">
+    <div class="card-head"><div><div class="eyebrow">Your daily report</div><h2 style="margin-top:5px">今日工作报告</h2><div class="report-source" id="reportSource">生成报告后，系统将保存到历史记录</div></div><div class="actions"><button class="small-link" id="copyReport">复制报告</button><button class="small-link" id="downloadReport">导出 TXT</button></div></div>
+    <div class="report-accordion" id="reportAccordion">
+      <details open><summary>一、今日工作记录</summary><div class="report-body" data-report-section="0"></div></details>
+      <details><summary>二、按链路归因</summary><div class="report-body" data-report-section="1"></div></details>
+      <details><summary>三、专业建议与参照系</summary><div class="report-body" data-report-section="2"></div></details>
+      <details><summary>四、明日建议</summary><div class="report-body" data-report-section="3"></div></details>
+      <details><summary>五、一句话总结与今日成长</summary><div class="report-body" data-report-section="4"></div></details>
+    </div>
+    <div class="divider"></div><h2>粘贴外部 AI 结果</h2><p class="muted">把外部 AI 生成的完整报告粘贴到这里，可作为一条历史记录保存。</p><textarea id="pasteOutput" placeholder="粘贴完整报告……" style="min-height:110px;margin-top:12px"></textarea><button class="small-link" id="importOutput">保存粘贴结果 ↗</button>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><div><div class="eyebrow">Review</div><h2 style="margin-top:5px">周报 / 月报</h2><div class="muted">基于本地历史记录与待办生成规则汇总</div></div><select id="summaryPeriod" style="width:auto"><option value="week">近 7 天</option><option value="month">本月</option></select></div>
+    <button class="small-link" id="generateSummary">生成总结 ↗</button><div class="summary-output" id="summaryOutput" style="margin-top:14px">选择周期并生成总结。</div><button class="small-link" id="downloadSummary">导出总结 TXT</button>
+  </section>
+
+  <section class="card settings" id="settingsCard">
+    <div class="card-head"><div><div class="eyebrow">Configuration</div><h2>工作台设置</h2></div><button class="small-link" id="closeSettings">收起 ×</button></div>
+    <div class="notice">安全提示：API Key 存储在当前浏览器 localStorage 中。静态网页无法隐藏密钥；不要在公用设备使用。生产部署建议通过服务端代理调用模型。</div>
+    <h3>模型 API</h3><div class="field"><label class="label" for="apiKey">API Key</label><input id="apiKey" type="password" autocomplete="off" placeholder="DeepSeek 或 OpenAI 兼容 API Key"><div class="hint">导出 JSON 备份时会排除 API Key。</div></div>
+    <div class="grid2"><div class="field"><label class="label" for="baseUrl">Base URL</label><input id="baseUrl" value="https://api.deepseek.com"></div><div class="field"><label class="label" for="model">模型名称</label><input id="model" value="deepseek-chat"></div></div>
+    <label class="checkline"><input type="checkbox" id="useAI" checked> 有 API Key 时自动调用 AI</label><div class="actions" style="margin-top:14px"><button class="small-link" id="saveSettings">保存设置</button><button class="small-link" id="testAPI">测试 API</button></div><div class="status" id="apiStatus"></div>
+    <div class="divider"></div><h3>行业配置</h3><div class="field"><label class="label" for="industryList">每行一个行业</label><textarea id="industryList" style="min-height:100px"></textarea><div class="hint">配置点①：修改默认行业见脚本 DEFAULT_INDUSTRIES；页面中可增删行业。</div></div><button class="small-link" id="saveIndustries">保存行业列表</button>
+    <div class="divider"></div><h3>指标基线配置说明</h3><p class="muted">配置点②：四项核心指标的默认基线见 HTML 中 baseGMV、baseOrders、baseVerify、baseActive 的 value。当前示例默认：GMV 1000 元、支付订单 10 单、核销率 50%、动销率 30%。这些只是可编辑的启动基线，不是行业事实或官方大盘值，请按业务周期、行业和统计口径调整。</p>
+    <div class="divider"></div><h3>分析 Prompt</h3><div class="field"><label class="label" for="promptTemplate">系统提示词模板</label><textarea id="promptTemplate" style="min-height:280px"></textarea><div class="hint">配置点③：在此编辑 Prompt；默认模板也可在脚本 DEFAULT_PROMPT 中修改。</div></div><div class="actions"><button class="small-link" id="savePrompt">保存 Prompt</button><button class="small-link" id="resetPrompt">恢复默认</button></div>
+  </section>
+</main>
+
+<aside class="sidebar">
+  <section class="card"><div class="card-head"><div><h2>待办跟进</h2><div class="muted" style="margin-top:5px">明日建议自动转成待办</div></div><span class="count" id="todoCount">0 未完成</span></div><div id="todoList"><div class="empty">还没有待办</div></div><div class="actions" style="margin-top:12px"><button class="small-link" id="addTodoBtn">＋ 手动添加</button><button class="small-link" id="clearDoneBtn">清除已完成</button></div><div class="muted" id="todoReminder" style="margin-top:8px"></div></section>
+  <section class="card"><div class="card-head"><div><h2>历史工作记录</h2><div class="muted" style="margin-top:5px">按行业、链路回看动作</div></div><span class="count" id="historyCount">0 条</span></div><div class="filters"><input id="historySearch" placeholder="搜索内容、行业或日期"><select id="historyFilter"><option value="">全部行业</option><option>交通工具</option><option>丽人</option><option>本地生活服务</option><option>汽车</option></select><select id="chainFilter"><option value="">全部链路</option><option>商家</option><option>商品</option><option>交易</option><option>流量</option><option>运营</option><option>系统</option></select></div><div id="historyList" style="margin-top:10px"><div class="empty">暂无历史记录</div></div><div class="divider"></div><div class="actions"><button class="small-link" id="exportAll">导出 JSON 备份</button><button class="small-link" id="importAllBtn">导入备份</button><input id="importFile" type="file" accept=".json,application/json" hidden></div><p class="muted">数据保存在当前浏览器。建议定期导出 JSON 备份。</p></section>
+  <section class="card"><h2>业务链路速查</h2><div class="tag-row" style="margin-top:15px"><span class="tag">商家：入驻 / 建店 / 认领 / 资质</span><span class="tag">商品：团单 / 上品 / 审核 / 展示</span><span class="tag">交易：下单 / 支付 / 核销 / 结算</span><span class="tag">流量：内容 / 货架 / 投流 / 转化</span><span class="tag">运营：活动 / 补贴 / 策略 / 复盘</span><span class="tag">系统：POI / 主体 / 账户 / 配置</span><span class="tag">生态：达人中台 / 运营商中台 / 策略中台</span><span class="tag">内容：直播 / 短视频</span><span class="tag">治理 / 产运</span></div></section>
+  <section class="card"><h2>动作 → 指标闭环</h2><p class="muted">每条工作记录可绑定预期指标。记录满 3 天后可回填实际值，观察预期与结果是否一致。</p><div id="actionTracks"><div class="empty">暂无待回填动作</div></div></section>
+</aside>
+</div>
+<footer class="footer">到综行业运营工作台 · PWA 离线支持 · 本地存储 · 请核对 AI 输出与指标口径后再归档</footer>
+
+<script src="./config.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>
